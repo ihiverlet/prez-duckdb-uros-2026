@@ -18,10 +18,9 @@ format:
     resources: [logo-sspcloud.svg]
     preview-links: auto
     hash-type: number
-
 ---
 
-## DuckDB: What is it ? 🦆
+## DuckDB: What is it? 🦆
 
 
 ::: {.notes}
@@ -29,19 +28,32 @@ Intro : are you afraid of the terminal ? You know, this tiny little black box wh
 If not, then do you love it ? -> I hope you will find things to your heart content then   
 :::
 
-
-![](img/logo.png){width="100%"}
-
 An analytical SQL database management system
 
-- **fast**
-- **open-source**
-- **in-process**
-- **analytical**
-- **interoperability**
-- **portable**  
 
+:::: {.columns}
+
+</br>
+
+::: {.column width="50%"}
+![](img/logo.png){width="70%"}
+:::
+
+::: {.column width="50%"}
+
+</br>
+
+- **Fast**
+- **Open-source**
+- **In-process**
+- **Analytical**
+- **Interoperability**
+- **Portable**  
+:::
+
+::::
 ---
+
 ## In-process
 
 Different from classical architecture client/server 
@@ -58,11 +70,12 @@ the data storage is decoupled from duckdb that works by default `in-memory` and 
 * Architecture Duckdb : client / serveur => sources multiples de données
 
 ---
+
 ## Analytical
 
 Specialized in analyticak treatments (opposed as transactionnal) :
 
-* use of raw data (.csv, .parquet)
+* use of raw data (.csv, .parquet, .json)
 * mainly use WORM `write once, read many` pattern (read the data than modifying it) 
 
 ---
@@ -88,9 +101,53 @@ We will now focus on the R client, and the cli but there are many other ways to 
 Install it, extensions if needed, configure it  
 Exemple of usage, show rstudio with R
 dplyr -> show query -> sql 
+
 parler de arrow ? en perte de vitesse 
-parler de config ? limiter le nombre de threads (serveur partagé?)
-disk vs memory ? 
+
+---
+
+##
+
+un mot sur la ram - disk
+disk vs memory ? OUI & OOM 
+comment gérer si trop gros
+
+:::{.notes}
+Most DuckDB internals are optimized for in-memory operation. By
+default, 80% of the host RAM1 is used to process data and queries.
+Memory  is a precious resource. DuckDB is built to use all RAM
+available but gradually moves to disk-based processing if required
+(out-of-core processing):
+If queries permit, stream small data chunks (packs of vectors)
+through the system. Avoid to materialize entire tables in RAM.
+Try to hold intermediate data structures (e.g., hash tables) in
+memory. Spill to disk if a query produces huge intermediates.
+In the remaining memory space (if any), cache disk-resident table
+data to speed up future accesses.
+DB lingo: buffering
+
+
+uckDB temporarily uses out-of-core memory on disk to hold (parts
+of) large intermediates (DB lingo: spilling).
+
+
+As long as memory usage permits, DuckDB buffers data read from
+persistent database file *.db file in RAM:
+
+
+DuckDB uses column-based storage j for base tables, but relies on
+a row-major layout k for paged intermediate data:
+Co-locating the columns of a row helps row comparison during
+sorting, hashing, or joins (column access locality).
+
+:::
+
+---
+
+##
+
+parler de config ? limiter le nombre de threads (serveur partagé?) 
+
 
 ---
 
@@ -123,35 +180,50 @@ Si on veut qu'il sauvegarde ses tables, on peut préciser un fichier de database
 
 ---
 
-## One tip  : use another client before using duckdb R (or create a file), else, you will install extensions twice, define secrets twice
-
-Why so ? Cran requirements, Ridley effect. 
-
-Screenshot to add - 
-What I want to emphasize is that most R users, other than package developers, are likely unaware of CRAN policies.
-To them, this will probably just be perceived as duckdb-r being difficult to use.
-
-## Optionnel : configuration 
+## Let's make the CLI less serious  
 
 Pour configurer la CLI vous avez la possibilité de créer un fichier `.duckdbrc` à la racine de votre répertoire personnel ($HOME). Ce fichier vous permettra d'exécuter du code au lancement de votre session duckdb.
 
 ```
-.prompt 'duckdb>'
-CREATE OR REPLACE SECRET secret ( TYPE s3, PROVIDER credential_chain, CHAIN "env;config", PROFILE 'default',  ENDPOINT "minio.lab.sspcloud.fr" );
+.prompt '🦆'
+.timer on
 ```
-
 
 ---
 
-## One tip  use another client before using duckdb R (or create a file), else, you will install extensions twice, define secrets twice
+## Let's try it 🚀
 
-Why so ? Cran requirements, Ridley effect. 
+---
 
-Screenshot to add - 
-What I want to emphasize is that most R users, other than package developers, are likely unaware of CRAN policies.
-To them, this will probably just be perceived as duckdb-r being difficult to use.
+## Tip 
+
+use another client before using duckdb R (or create a directory), else, you will install extensions twice, define secrets twice
+
+By default things are installed/configured in a temporary file
+
+Create the directory 
+~/.duckdb
+
+Or use the CLI or another client before using duckdb-r
 
 
+Why ? Because of CRAN requirements
+
+---
+
+## A word for the developpers of the project
+
+![](img/cran.png){width="100%"}
+
+
+::: {.notes}
+
+
+Replaces the marker-file storage mechanism (and the per-kind directory options/env vars) with a single home directory for DuckDB's downloaded extensions and stored secrets, resolved fresh on every duckdb() call that creates a new driver. Implements the design converged with CRAN (Kurt Hornik) on the "duckdb default storage location" thread: use ~/.duckdb if it already exists, never create it non-interactively, and offer to create it interactively.
+
+Extensions live at <home>/extensions, secrets at <home>/stored_secrets.
+
+:::
 
 
 ---
