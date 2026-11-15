@@ -1,0 +1,163 @@
+---
+title: "DuckDB beyond R: demystifying the analytical datalabase in your toolbox"
+subtitle: ""
+author: "Ines Hiverlet"
+date: "2026-11-20"
+lang: en-US
+from: markdown+emoji
+format:
+  onyxia-revealjs:
+    output-file: index.html
+    slide-number: c/t
+    scrollable: true
+    code-copy: true
+    code-line-numbers: false
+    footer: ""
+    theme: [default, _extensions/InseeFrLab/onyxia/onyxia.scss, sspcloud.scss]
+    css: custom.css
+    resources: [logo-sspcloud.svg]
+    preview-links: auto
+    hash-type: number
+
+---
+
+## DuckDB: What is it ? 🦆
+
+
+::: {.notes}
+Intro : are you afraid of the terminal ? You know, this tiny little black box where you can write lots of commands... Are you a little bit scared to use it ? -> Secret goal
+If not, then do you love it ? -> I hope you will find things to your heart content then   
+:::
+
+
+![](img/logo.png){width="100%"}
+
+An analytical SQL database management system
+
+- **fast**
+- **open-source**
+- **in-process**
+- **analytical**
+- **interoperability**
+- **portable**  
+
+---
+## In-process
+
+Different from classical architecture client/server 
+
+- client: send requests to the server and get back the result  
+- server: run continuously, receives requests, analyse and determine an execution plan  
+- stockage: usually, local system file of the server  
+
+In duckdb: 
+the client and the server run in the same process that only runs for the time of the duckdb session
+the data storage is decoupled from duckdb that works by default `in-memory` and take external data sources 
+
+* Architecture classique (type postgres) : client => serveur / stockage des données  
+* Architecture Duckdb : client / serveur => sources multiples de données
+
+---
+## Analytical
+
+Specialized in analyticak treatments (opposed as transactionnal) :
+
+* use of raw data (.csv, .parquet)
+* mainly use WORM `write once, read many` pattern (read the data than modifying it) 
+
+---
+
+## Interoperability
+
+- read and interface multiple data sources (csv, parquet, geoparquet, json...)
+- several protocols (s3, http, databases...)
+- compatible with PostgreSQL dialect (almost entirely)
+
+---
+
+## Portable
+
+- mulitple languages and multi plateforme 
+
+We will now focus on the R client, and the cli but there are many other ways to use it : R, python, Java, web assembly...
+
+---
+
+## Use Duckdb with R
+
+Install it, extensions if needed, configure it  
+Exemple of usage, show rstudio with R
+dplyr -> show query -> sql 
+parler de arrow ? en perte de vitesse 
+parler de config ? limiter le nombre de threads (serveur partagé?)
+disk vs memory ? 
+
+---
+
+## Meet the terminal
+
+### Install the cli 
+
+Demo
+
+---
+
+
+DuckDB CLI est distribué sous forme de binaire standalone, téléchargeable directement sur [leur site documentaire](https://duckdb.org/docs/installation/?version=stable&environment=cli&platform=linux&download_method=direct&architecture=x86_64).  
+Il est par ailleurs préinstallé dans la majorité des environnements modernes de datascience dont les environnements lancés par [Onyxia](https://onyxia.sh)
+
+## Première utilisation de la cli
+
+Lancer `duckdb` :  
+
+```shell
+ines@laboitemagique:~$ duckdb
+v1.3.0 (Ossivalis) 71c5c07cdd
+Enter ".help" for usage hints.
+Connected to a transient in-memory database.
+Use ".open FILENAME" to reopen on a persistent database.
+```  
+
+On constate bien que `duckdb` travaille uniquement en mémoire (`transient in-memory database`). Toutes les données seront donc perdues à la fin de la session.  
+Si on veut qu'il sauvegarde ses tables, on peut préciser un fichier de database au moment du lancement `duckdb madb.db` ou à chaud pendant une session : `.open madb.db`.  
+
+---
+
+## One tip  : use another client before using duckdb R (or create a file), else, you will install extensions twice, define secrets twice
+
+Why so ? Cran requirements, Ridley effect. 
+
+Screenshot to add - 
+What I want to emphasize is that most R users, other than package developers, are likely unaware of CRAN policies.
+To them, this will probably just be perceived as duckdb-r being difficult to use.
+
+## Optionnel : configuration 
+
+Pour configurer la CLI vous avez la possibilité de créer un fichier `.duckdbrc` à la racine de votre répertoire personnel ($HOME). Ce fichier vous permettra d'exécuter du code au lancement de votre session duckdb.
+
+```
+.prompt 'duckdb>'
+CREATE OR REPLACE SECRET secret ( TYPE s3, PROVIDER credential_chain, CHAIN "env;config", PROFILE 'default',  ENDPOINT "minio.lab.sspcloud.fr" );
+```
+
+
+---
+
+## One tip  use another client before using duckdb R (or create a file), else, you will install extensions twice, define secrets twice
+
+Why so ? Cran requirements, Ridley effect. 
+
+Screenshot to add - 
+What I want to emphasize is that most R users, other than package developers, are likely unaware of CRAN policies.
+To them, this will probably just be perceived as duckdb-r being difficult to use.
+
+
+
+
+---
+
+::: {.notes}
+
+End: Returning to my original question, I hope you are now willing to use or at least test the terminal :)
+
+:::
