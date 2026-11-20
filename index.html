@@ -184,6 +184,8 @@ Ines Hiverlet
 </section>
 <section class="slide level2" data-background-image="background.svg" data-background-size="contain">
 <h2>In-process</h2>
+
+<img data-src="img/schema.png" style="width:100.0%" class="r-stretch"><aside class="notes">
 <p>Different from classical architecture client/server</p>
 <ul>
 <li>client: send requests to the server and get back the result<br>
@@ -198,44 +200,6 @@ Ines Hiverlet
 </li>
 <li>Architecture Duckdb : client / serveur =&gt; sources multiples de données</li>
 </ul>
-</section>
-<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
-<h2>Analytical</h2>
-<p>Specialized in analyticak treatments (opposed as transactionnal) :</p>
-<ul>
-<li>use of raw data (.csv, .parquet, .json)</li>
-<li>mainly use WORM <code>write once, read many</code> pattern (read the data than modifying it)</li>
-</ul>
-</section>
-<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
-<h2>Interoperability</h2>
-<ul>
-<li>read and interface multiple data sources (csv, parquet, geoparquet, json…)</li>
-<li>several protocols (s3, http, databases…)</li>
-<li>compatible with PostgreSQL dialect (almost entirely)</li>
-</ul>
-</section>
-<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
-<h2>Portable</h2>
-<ul>
-<li>mulitple languages and multi plateforme</li>
-</ul>
-<p>We will now focus on the R client, and the cli but there are many other ways to use it : R, python, Java, web assembly…</p>
-</section>
-<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
-<h2>Use Duckdb with R</h2>
-<p>Install it, extensions if needed, configure it<br>
-Exemple of usage, show rstudio with R dplyr -&gt; show query -&gt; sql</p>
-<p>parler de arrow ? en perte de vitesse</p>
-</section>
-<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
-<h2></h2>
-<p>un mot sur la ram - disk disk vs memory ? OUI &amp; OOM comment gérer si trop gros</p>
-<aside class="notes">
-<p>Most DuckDB internals are optimized for in-memory operation. By default, 80% of the host RAM1 is used to process data and queries. Memory  is a precious resource. DuckDB is built to use all RAM available but gradually moves to disk-based processing if required (out-of-core processing): If queries permit, stream small data chunks (packs of vectors) through the system. Avoid to materialize entire tables in RAM. Try to hold intermediate data structures (e.g., hash tables) in memory. Spill to disk if a query produces huge intermediates. In the remaining memory space (if any), cache disk-resident table data to speed up future accesses. DB lingo: buffering</p>
-<p>uckDB temporarily uses out-of-core memory on disk to hold (parts of) large intermediates (DB lingo: spilling).</p>
-<p>As long as memory usage permits, DuckDB buffers data read from persistent database file *.db file in RAM:</p>
-<p>DuckDB uses column-based storage j for base tables, but relies on a row-major layout k for paged intermediate data: Co-locating the columns of a row helps row comparison during sorting, hashing, or joins (column access locality).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -249,16 +213,66 @@ Exemple of usage, show rstudio with R dplyr -&gt; show query -&gt; sql</p>
       }</style></aside>
 </section>
 <section class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2>Analytical</h2>
+<p><br></p>
+<p>Specialized in analytical treatments (opposed as transactionnal) :</p>
+<p><br></p>
+<ul>
+<li><p>Use of raw data (.csv, .parquet, .json)</p></li>
+<li><p>Mainly use WORM <code>write once, read many</code> pattern (read the data than modifying it)</p></li>
+</ul>
+</section>
+<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2>Interoperability</h2>
+<p><br></p>
+<ul>
+<li><p>Read and interface multiple data sources (csv, parquet, geoparquet, json…)</p></li>
+<li><p>Several protocols (s3, http, databases…)</p></li>
+<li><p>Compatible with PostgreSQL dialect (almost entirely)</p></li>
+</ul>
+
+<img data-src="img/interoperability.png" style="width:100.0%" class="r-stretch"></section>
+<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2>Portable</h2>
+<p><br></p>
+<ul>
+<li>Multiple languages and multiple plateforme</li>
+</ul>
+<p><br></p>
+<p>We will now focus on the R client, and the cli but there are many other ways to use it : R, python, Rust, Java, web assembly…</p>
+</section>
+<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2>Demo</h2>
+<p>Take a look at this great resource:<br>
+https://book.utilitr.org/03_Fiches_thematiques/Fiche_duckdb.html#sec-configuration</p>
+</section>
+<aside class="notes">
+<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2>Use Duckdb with R</h2>
+<p>Install it, extensions if needed, configure it<br>
+Exemple of usage, show rstudio with R dplyr -&gt; show query -&gt; sql</p>
+<p>parler de arrow ? en perte de vitesse</p>
+<hr>
+</section>
+<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2></h2>
+<p>un mot sur la ram - disk disk vs memory ? OUI &amp; OOM comment gérer si trop gros</p>
+<p>Most DuckDB internals are optimized for in-memory operation. By default, 80% of the host RAM1 is used to process data and queries. Memory  is a precious resource. DuckDB is built to use all RAM available but gradually moves to disk-based processing if required (out-of-core processing): If queries permit, stream small data chunks (packs of vectors) through the system. Avoid to materialize entire tables in RAM. Try to hold intermediate data structures (e.g., hash tables) in memory. Spill to disk if a query produces huge intermediates. In the remaining memory space (if any), cache disk-resident table data to speed up future accesses. DB lingo: buffering</p>
+<p>uckDB temporarily uses out-of-core memory on disk to hold (parts of) large intermediates (DB lingo: spilling).</p>
+<p>As long as memory usage permits, DuckDB buffers data read from persistent database file *.db file in RAM:</p>
+<p>DuckDB uses column-based storage j for base tables, but relies on a row-major layout k for paged intermediate data: Co-locating the columns of a row helps row comparison during sorting, hashing, or joins (column access locality).</p>
+<hr>
+</section>
+<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
 <h2></h2>
 <p>parler de config ? limiter le nombre de threads (serveur partagé?)</p>
+<hr>
 </section>
 <section class="slide level2" data-background-image="background.svg" data-background-size="contain">
 <h2>Meet the terminal</h2>
 <h3 data-background-image="background.svg" data-background-size="contain">Install the cli</h3>
 <p>Demo</p>
-</section>
-<section class="slide level2">
-
+<hr>
 <p>DuckDB CLI est distribué sous forme de binaire standalone, téléchargeable directement sur <a href="https://duckdb.org/docs/installation/?version=stable&amp;environment=cli&amp;platform=linux&amp;download_method=direct&amp;architecture=x86_64">leur site documentaire</a>.<br>
 Il est par ailleurs préinstallé dans la majorité des environnements modernes de datascience dont les environnements lancés par <a href="https://onyxia.sh">Onyxia</a></p>
 </section>
@@ -272,28 +286,65 @@ Connected to a transient in-memory database.
 Use ".open FILENAME" to reopen on a persistent database.</code></pre>
 <p>On constate bien que <code>duckdb</code> travaille uniquement en mémoire (<code>transient in-memory database</code>). Toutes les données seront donc perdues à la fin de la session.<br>
 Si on veut qu’il sauvegarde ses tables, on peut préciser un fichier de database au moment du lancement <code>duckdb madb.db</code> ou à chaud pendant une session : <code>.open madb.db</code>.</p>
+<hr>
 </section>
 <section class="slide level2" data-background-image="background.svg" data-background-size="contain">
 <h2>Let’s make the CLI less serious</h2>
-<p>Pour configurer la CLI vous avez la possibilité de créer un fichier <code>.duckdbrc</code> à la racine de votre répertoire personnel ($HOME). Ce fichier vous permettra d’exécuter du code au lancement de votre session duckdb.</p>
+<p>To configure the CLI, create a file <code>.duckdbrc</code> at the root of your personnal repo ($HOME) This file is executed at the duckdb session’s startup</p>
 <pre><code>.prompt '🦆'
 .timer on</code></pre>
+<hr>
 </section>
 <section class="slide level2" data-background-image="background.svg" data-background-size="contain">
 <h2>Let’s try it 🚀</h2>
+<pre><code>duckdb
+&gt; some sql command 
+</code></pre>
+<p>-&gt; see the version and that it is in memory and then do SQL</p>
+<p>or you can execute a file too</p>
+<pre><code>duckdb -f demo.sql </code></pre>
+<hr>
 </section>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 <section class="slide level2" data-background-image="background.svg" data-background-size="contain">
 <h2>Tip</h2>
-<p>use another client before using duckdb R (or create a directory), else, you will install extensions twice, define secrets twice</p>
-<p>By default things are installed/configured in a temporary file</p>
-<p>Create the directory ~/.duckdb</p>
+<p><br> Use another client before using duckdb R (or create a directory), else, you will install extensions twice, define secrets twice…<br>
+<br> By default things are installed/configured in a temporary file. To avoid that:<br>
+Create the directory<br>
+~/.duckdb</p>
 <p>Or use the CLI or another client before using duckdb-r</p>
-<p>Why ? Because of CRAN requirements</p>
 </section>
 <section class="slide level2" data-background-image="background.svg" data-background-size="contain">
-<h2>A word for the developpers of the project</h2>
+<h2>A word for the developpers of the duckdb R package</h2>
+<p><br></p>
+<ul>
+<li><p>Highly reactive</p></li>
+<li><p>Think of the user experience</p></li>
+</ul>
+<p><br></p>
 
-<img data-src="img/cran.png" style="width:100.0%" class="r-stretch"><aside class="notes">
+<img data-src="img/cran.png" style="width:120.0%" class="r-stretch"></section>
+<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2>Be loved by your IT team</h2>
+<p><br></p>
+<p>Use the cli : it requires less maintainance and is lighter</p>
+<p><br> R + RStudio Server + base packages + duckdbR ~ 1 Go<br>
+DuckDB CLI ~ 50 Mo</p>
+</section>
+<section class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2>Give the cli a try</h2>
+
+<img data-src="img/logo.png" style="width:100.0%" class="r-stretch"><aside class="notes">
 <p>Replaces the marker-file storage mechanism (and the per-kind directory options/env vars) with a single home directory for DuckDB’s downloaded extensions and stored secrets, resolved fresh on every duckdb() call that creates a new driver. Implements the design converged with CRAN (Kurt Hornik) on the “duckdb default storage location” thread: use ~/.duckdb if it already exists, never create it non-interactively, and offer to create it interactively.</p>
 <p>Extensions live at <home>/extensions, secrets at <home>/stored_secrets.</home></home></p>
 <style type="text/css">

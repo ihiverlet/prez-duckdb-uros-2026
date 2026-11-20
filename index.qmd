@@ -56,6 +56,11 @@ An analytical SQL database management system
 
 ## In-process
 
+![](img/schema.png){width="100%"}
+
+
+
+:::{.notes}
 Different from classical architecture client/server 
 
 - client: send requests to the server and get back the result  
@@ -68,33 +73,57 @@ the data storage is decoupled from duckdb that works by default `in-memory` and 
 
 * Architecture classique (type postgres) : client => serveur / stockage des données  
 * Architecture Duckdb : client / serveur => sources multiples de données
+:::
 
 ---
 
 ## Analytical
 
-Specialized in analyticak treatments (opposed as transactionnal) :
+</br>
 
-* use of raw data (.csv, .parquet, .json)
-* mainly use WORM `write once, read many` pattern (read the data than modifying it) 
+Specialized in analytical treatments (opposed as transactionnal) :
+
+</br>
+
+- Use of raw data (.csv, .parquet, .json)
+
+- Mainly use WORM `write once, read many` pattern (read the data than modifying it) 
 
 ---
 
 ## Interoperability
 
-- read and interface multiple data sources (csv, parquet, geoparquet, json...)
-- several protocols (s3, http, databases...)
-- compatible with PostgreSQL dialect (almost entirely)
+</br>
+
+- Read and interface multiple data sources (csv, parquet, geoparquet, json...)
+
+- Several protocols (s3, http, databases...)
+
+- Compatible with PostgreSQL dialect (almost entirely)
+
+![](img/interoperability.png){width="100%"}
+
 
 ---
 
 ## Portable
 
-- mulitple languages and multi plateforme 
+</br>
 
-We will now focus on the R client, and the cli but there are many other ways to use it : R, python, Java, web assembly...
+- Multiple languages and multiple plateforme 
+
+</br>
+
+We will now focus on the R client, and the cli but there are many other ways to use it : R, python, Rust, Java, web assembly...
 
 ---
+
+## Demo 
+
+Take a look at this great resource:   
+https://book.utilitr.org/03_Fiches_thematiques/Fiche_duckdb.html#sec-configuration
+
+::: {.notes}
 
 ## Use Duckdb with R
 
@@ -112,7 +141,8 @@ un mot sur la ram - disk
 disk vs memory ? OUI & OOM 
 comment gérer si trop gros
 
-:::{.notes}
+
+
 Most DuckDB internals are optimized for in-memory operation. By
 default, 80% of the host RAM1 is used to process data and queries.
 Memory  is a precious resource. DuckDB is built to use all RAM
@@ -140,7 +170,6 @@ a row-major layout k for paged intermediate data:
 Co-locating the columns of a row helps row comparison during
 sorting, hashing, or joins (column access locality).
 
-:::
 
 ---
 
@@ -182,38 +211,81 @@ Si on veut qu'il sauvegarde ses tables, on peut préciser un fichier de database
 
 ## Let's make the CLI less serious  
 
-Pour configurer la CLI vous avez la possibilité de créer un fichier `.duckdbrc` à la racine de votre répertoire personnel ($HOME). Ce fichier vous permettra d'exécuter du code au lancement de votre session duckdb.
+To configure the CLI, create a file  `.duckdbrc` at the root of your personnal repo ($HOME)
+This file is executed at the duckdb session's startup
 
 ```
 .prompt '🦆'
 .timer on
 ```
 
+
 ---
 
 ## Let's try it 🚀
 
+```
+duckdb
+> some sql command 
+
+```
+-> see the version and that it is in memory 
+and then do SQL
+
+or you can execute a file too
+
+```
+duckdb -f demo.sql 
+```
+
+---
+
+:::
+
 ---
 
 ## Tip 
-
-use another client before using duckdb R (or create a directory), else, you will install extensions twice, define secrets twice
-
-By default things are installed/configured in a temporary file
-
-Create the directory 
+</br>
+Use another client before using duckdb R (or create a directory), else, you will install extensions twice, define secrets twice...  
+</br>
+By default things are installed/configured in a temporary file. To avoid that:  
+Create the directory   
 ~/.duckdb
-
+  
 Or use the CLI or another client before using duckdb-r
-
-
-Why ? Because of CRAN requirements
 
 ---
 
-## A word for the developpers of the project
+## A word for the developpers of the duckdb R package
 
-![](img/cran.png){width="100%"}
+</br>
+
+- Highly reactive
+
+- Think of the user experience 
+
+</br>
+
+![](img/cran.png){width="120%"}
+
+---
+
+## Be loved by your IT team 
+
+</br>
+
+Use the cli : it requires less maintainance and is lighter 
+
+</br>
+R	+ RStudio Server + base packages + duckdbR  ~ 1 Go  
+DuckDB CLI ~ 50 Mo
+
+--- 
+
+  
+## Give the cli a try 
+
+![](img/logo.png){width="100%"}
 
 
 ::: {.notes}
